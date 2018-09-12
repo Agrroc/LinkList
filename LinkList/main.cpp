@@ -96,7 +96,7 @@ void creatLinklistR(LNode *&head)
 {
     head=(LNode *)malloc(sizeof(LNode));    //分配一个头节点
     head->next=NULL;    //链表为带头链表，此时链表为空
-    LNode *p=NULL,*r=head;//p指向新创建的节点，r指向最终节点
+    LNode *p=NULL, *r=head;//p指向新创建的节点，r指向最终节点
     printf("请输入链表中节点的个数:");
     int n;
     scanf("%d",&n);
@@ -204,13 +204,13 @@ void findMinNode(LNode *head)
 //从小到大归并链表节点
 void merge(LNode *A,LNode *B, LNode *&C)
 {
-    LNode *p, *q;
+    LNode *p, *q;   //因为链表是递增的，所以用q,p来指向最小节点
     p= A->next; q= B->next;
     LNode *r;
     C= A;
     C->next= NULL;
     free(B);
-    r= A;
+    r= C;   //r指向C的最终节点，因为此时的头节点就是终端节点
     while (p!=NULL && q!=NULL ) {
         if (p->data <= q->data) {
             r->next= p;
@@ -219,7 +219,7 @@ void merge(LNode *A,LNode *B, LNode *&C)
         }
         else
         {
-            r= q->next;
+            r->next= q;
             q= q->next;
             r= r->next;
         }
@@ -232,15 +232,17 @@ void merge(LNode *A,LNode *B, LNode *&C)
     }
 }
 
-//若线性表的从小到大，那么归并后从大到大
+//若线性表的从小到大，那么归并后从大到小
 void mergeR(LNode *A,LNode *B, LNode *&C)
 {
     LNode *p= A->next, *q= B->next;
     LNode *s;
     C= A;
     C->next= NULL;
-    free(B);
+    free(B);    //因为有两个头节点，只需要一个，所以把A当作新链表C的头节点，同时释放B节点。
     while (p!=NULL && q!=NULL) {
+        //比较两者的大小，先把AB中较小的用头插法插入C链表中
+        //注意的是，从大到小每次插入的节点都需要一个新指针s所指向，保证s的后继节点p不能丢
         if (p->data <= q->data) {
             s=p;
             p= p->next;
@@ -295,8 +297,8 @@ int main(int argc, const char * argv[]) {
     travelList(B);
     printf("归并后的新链表：");
     LNode *C= NULL;
-//    merge(A, B, C);   //从小到大
-    mergeR(A, B, C);    //从大到小
+    merge(A, B, C);   //从小到大
+//    mergeR(A, B, C);    //从大到小
     travelList(C);
     
     return 0;
